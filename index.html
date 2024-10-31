@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Portfolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --background: #0f0f0f;
+            --text: #ffffff;
+            --accent: #fe4a23;
+            --surface: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            line-height: 1;
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, opacity 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor.hover {
+            width: 60px;
+            height: 60px;
+            opacity: 0.25;
+        }
+
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .menu-btn {
+            font-size: 1.5rem;
+            color: var(--text);
+            background: none;
+            border: none;
+            cursor: none;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero-text {
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: bold;
+            line-height: 0.9;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .projects {
+            padding: 4rem 2rem;
+        }
+
+        .project-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 8rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .project-image {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .project-item:hover .project-image img {
+            transform: scale(1.1);
+        }
+
+        .project-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .project-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+
+        .project-description {
+            font-size: 1.25rem;
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .project-link {
+            display: inline-block;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 1.25rem;
+            position: relative;
+        }
+
+        .project-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .project-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .about {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .about-text {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: #888;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .contact {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+        }
+
+        .contact-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .contact-item {
+            font-size: 1.25rem;
+        }
+
+        .contact-item h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .contact-item a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .project-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+
+    <header class="nav-header">
+        <a href="#" class="logo">PORTFOLIO</a>
+        <button class="menu-btn">Menu</button>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="hero-text">
+                I'M <br>
+                SIDDHANT<br>
+                JADHAV
+            </h1>
+        </section>
+
+        <section class="projects">
+            <div class="project-item">
+                <div class="project-image">
+                    <img src="image-22.webp" alt="Project 1-snake" >
+                </div>
+                <div class="project-content">
+                    <h2 class="project-title">Snake Game</h2>
+                    <p class="project-description">
+                        This was the ai project. You can check-out more on github.
+                    </p>
+                    <a href="https://github.com/Siddhantjadhav69/Python_Projects/blob/main/snake.py" class="project-link">View Project</a>
+                </div>
+            </div>
+
+            <div class="project-item">
+                <div class="project-content">
+                    <h2 class="project-title">Basic Amazon clone</h2>
+                    <p class="project-description">
+                        Created my first clone of amazon.com
+                    </p>
+                    <a href="https://github.com/Siddhantjadhav69/Amazon_Basic_clone" class="project-link">Check out Here!</a>
+                </div>
+                <div class="project-image">
+                    <img src="Amazon-1.webp" alt="Project 2">
+                </div>
+            </div>
+
+            <div class="project-item">
+                <div class="project-image">
+                    <img src="istockphoto-1142734896-612x612.jpg" alt="Project 3">
+                </div>
+                <div class="project-content">
+                    <h2 class="project-title">Ride calculator</h2>
+                    <p class="project-description">
+                        You can view a lot more projects on my github.
+                    </p>
+                    <a href="https://github.com/Siddhantjadhav69" class="project-link">Here!</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="about">
+            <div class="about-content">
+                <h2 class="about-title">About Me</h2>
+                <p class="about-text">
+                    "IT Student | Software Developer 
+
+                    I'm a first-year IT student at Dr. D. Y. Patil Arts, Commerce & Science College, Pimpri, currently learning software development, building websites, and exploring the fundamentals of creating functional and user-friendly applications. At 19, I’m excited about diving into new technologies and figuring out how they can solve real-world problems.
+                    
+                    I was also shortlisted for MSME IDEA HACKATHON 4.0 for my idea of a Smart Waste Segregation Bin that uses AI and IoT to help small businesses manage waste more efficiently.
+                    
+                    I’m always interested in connecting with people who share similar passions, learning new things, and working on cool projects. Feel free to reach out!"
+                </p>
+            </div>
+        </section>
+
+        <section class="contact">
+            <div class="contact-content">
+                <h2 class="contact-title">Let's Connect</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>Email</h3>
+                        <a href="mailto:siddhantjadhav@workmail.com">siddhantjadhav@workmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Phone</h3>
+                        <a href="tel:+918308702219">+918308702219</a>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Location</h3>
+                        <p>Pune, India</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>github</h3>
+                        <p><a href="https://github.com/Siddhantjadhav69">My github Page</a></p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Linkedin</h3>
+                        <p><a href="https://www.linkedin.com/in/siddhant-jadhav-75430723a">My LinkedIn Page</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Initialize GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        const links = document.querySelectorAll('a, button');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            link.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Hero animation
+        gsap.to('.hero-text', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.5
+        });
+
+        // Project items animation
+        gsap.utils.toArray('.project-item').forEach(item => {
+            gsap.to(item, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top bottom-=100',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // About section animation
+        gsap.to('.about-title', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            scrollTrigger: {
+                trigger: '.about-title',
+                start: 'top bottom-=100'
+            }
+        });
+
+        gsap.to('.about-text', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.3,
+            scrollTrigger: {
+                trigger: '.about-text',
+                start: 'top bottom-=100'
+            }
+        });
+
+        // Contact section animation
+        gsap.to('.contact-title', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            scrollTrigger: {
+                trigger: '.contact-title',
+                start: 'top bottom-=100'
+            }
+        });
+
+        gsap.to('.contact-info', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.3,
+            scrollTrigger: {
+                trigger: '.contact-info',
+                start: 'top bottom-=100'
+            }
+        });
+    </script>
+</body>
+</html>
